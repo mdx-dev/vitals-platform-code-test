@@ -1,4 +1,9 @@
 require 'rspec'
+require 'award'
+require 'blue_first'
+require 'blue_distinction_plus'
+require 'blue_compare'
+require 'blue_star'
 require 'update_quality'
 
 describe '#update_quality' do
@@ -6,7 +11,6 @@ describe '#update_quality' do
   context 'Given a single award' do
     let(:initial_expires_in) { 5 }
     let(:initial_quality) { 10 }
-    let(:award) { Award.new(name, initial_expires_in, initial_quality) }
 
     context 'when quality is updated' do
       before do
@@ -15,6 +19,7 @@ describe '#update_quality' do
 
       context 'given a normal award' do
         let(:name) { 'NORMAL ITEM' }
+        let(:award) { Award.new(name, initial_expires_in, initial_quality) }
 
         before do
           # Verify that this is always true in the current context
@@ -22,7 +27,9 @@ describe '#update_quality' do
         end
 
         context 'before expiration date' do
-          specify { expect(award.quality).to eq(initial_quality-1) }
+          specify {
+            expect(award.quality).to eq(initial_quality-1)
+          }
         end
 
         context 'on expiration date' do
@@ -43,14 +50,19 @@ describe '#update_quality' do
 
       context 'given Blue First' do
         let(:name) { 'Blue First' }
+        let(:award) { BlueFirst.new(name, initial_expires_in, initial_quality) }
 
         before do
           # Verify that this is always true in the current context
-          award.expires_in.should == initial_expires_in-1
+          # award.expires_in.should == initial_expires_in-1
+          expect(award.expires_in).to eq(initial_expires_in-1)
         end
 
+
         context 'before expiration date' do
-          specify { expect(award.quality).to eq(initial_quality+1) }
+          specify {
+            expect(award.quality).to eq(initial_quality+1)
+          }
 
           context 'with max quality' do
             let(:initial_quality) { 50 }
@@ -87,10 +99,12 @@ describe '#update_quality' do
       context 'given Blue Distinction Plus' do
         let(:initial_quality) { 80 }
         let(:name) { 'Blue Distinction Plus' }
+        let(:award) { BlueDistinctionPlus.new(name, initial_expires_in, initial_quality) }
 
         before do
           # Verify that this is always true in the current context
-          award.expires_in.should == initial_expires_in
+          # award.expires_in.should == initial_expires_in
+          expect(award.expires_in).to eq(initial_expires_in-1)
         end
 
         context 'before expiration date' do
@@ -110,10 +124,12 @@ describe '#update_quality' do
 
       context 'given Blue Compare' do
         let(:name) { 'Blue Compare' }
+        let(:award) { BlueCompare.new(name, initial_expires_in, initial_quality) }
 
         before do
           # Verify that this is always true in the current context
-          award.expires_in.should == initial_expires_in-1
+          # award.expires_in.should == initial_expires_in-1
+          expect(award.expires_in).to eq(initial_expires_in-1)
         end
 
         context 'long before expiration date' do
@@ -122,6 +138,7 @@ describe '#update_quality' do
 
           context 'at max quality' do
             let(:initial_quality) { 50 }
+            specify { expect(award.quality).to eq(initial_quality) }
           end
         end
 
@@ -177,9 +194,15 @@ describe '#update_quality' do
       end
 
       context 'given a Blue Star award' do
-        before { pending }
+        # before { pending }
         let(:name) { 'Blue Star' }
-        before { award.expires_in.should == initial_expires_in-1 }
+        let(:award) { BlueStar.new(name, initial_expires_in, initial_quality) }
+        # before { award.expires_in.should == initial_expires_in-1 }
+
+        before do
+          # Verify that this is always true in the current context
+          expect(award.expires_in).to eq(initial_expires_in-1)
+        end
 
         context 'before the expiration date' do
           let(:initial_expires_in) { 5 }
@@ -218,7 +241,7 @@ describe '#update_quality' do
     let(:awards) {
       [
         Award.new('NORMAL ITEM', 5, 10),
-        Award.new('Blue First', 3, 10),
+        BlueFirst.new('Blue First', 3, 10),
       ]
     }
 
